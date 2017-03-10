@@ -6,7 +6,7 @@
 //  Copyright © 2016 Yonah Forst. All rights reserved.
 //
 
-#import <React/RCTConvert.h>
+#import "RCTConvert.h"
 
 static NSString* RNPStatusUndetermined = @"undetermined";
 static NSString* RNPStatusDenied = @"denied";
@@ -25,8 +25,7 @@ typedef NS_ENUM(NSInteger, RNPType) {
     RNPTypeReminder,
     RNPTypeBluetooth,
     RNPTypeNotification,
-    RNPTypeBackgroundRefresh,
-    RNPTypeSpeechRecognition
+    RNPTypeBackgroundRefresh
 };
 
 @interface RCTConvert (RNPStatus)

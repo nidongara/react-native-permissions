@@ -12,22 +12,17 @@ The current supported permissions are:
 - Bluetooth *(iOS only)*
 - Push Notifications *(iOS only)*
 - Background Refresh *(iOS only)*
-- Speech Recognition *(iOS only)*
 
 
-| Version | React Native Support |
-|---|---|
-| 0.2.7 | 0.40.0 - 0.41.0 |
-| 0.2.5 | 0.33.0 - 0.39.0 |
-*Complies with [react-native-version-support-table](https://github.com/dangnelson/react-native-version-support-table)*
+###New in version 0.2.X
+- Android support 🎉🎉🍾
+- Example app
 
 ##General Usage
 ```
 npm install --save react-native-permissions
 rnpm link
 ```
-
-Add permissions to manifest for android and info.plist for ios (xcode >=8). See notes below for more details.
 
 ```js
 const Permissions = require('react-native-permissions');
@@ -57,7 +52,7 @@ const Permissions = require('react-native-permissions');
     Permissions.checkMultiplePermissions(['camera', 'photo'])
       .then(response => {
         //response is an object mapping type to permission
-        this.setState({
+        this.setState({ 
           cameraPermission: response.camera,
           photoPermission: response.photo,
         })
@@ -65,7 +60,7 @@ const Permissions = require('react-native-permissions');
   }
 
   // this is a common pattern when asking for permissions.
-  // iOS only gives you once chance to show the permission dialog,
+  // iOS only gives you once chance to show the permission dialog, 
   // after which the user needs to manually enable them from settings.
   // the idea here is to explain why we need access and determine if
   // the user will say no, so that we don't blow our one chance.
@@ -76,7 +71,7 @@ const Permissions = require('react-native-permissions');
       'We need access so you can set your profile pic',
       [
         {text: 'No way', onPress: () => console.log('permission denied'), style: 'cancel'},
-        this.state.photoPermission == 'undetermined'?
+        this.state.photoPermission == 'undetermined'? 
           {text: 'OK', onPress: this._requestPermission.bind(this)}
           : {text: 'Open Settings', onPress: Permissions.openSettings}
       ]
@@ -111,13 +106,11 @@ Promises resolve into one of these statuses
 |`reminder`| ✔️ | ❌ |
 |`notification`| ✔️ | ❌ |
 |`backgroundRefresh`| ✔️ | ❌ |
-|`speechRecognition`| ✔️ | ❌ |
-|`storage`| ❌️ | ✔ |
 
 ###Methods
 | Method Name | Arguments | Notes
 |---|---|---|
-| `getPermissionStatus` | `type` | - Returns a promise with the permission status. See iOS Notes for special cases |
+| `getPermissionStatus` | `type` | - Returns a promise with the permission status. Note: for type `location`, iOS `AuthorizedAlways` and `AuthorizedWhenInUse` both return `authorized` |
 | `requestPermission` | `type` | - Accepts any permission type except `backgroundRefresh`. If the current status is `undetermined`, shows the permission dialog and returns a promise with the resulting status. Otherwise, immediately return a promise with the current status. See iOS Notes for special cases|
 | `checkMultiplePermissions` | `[types]` | - Accepts an array of permission types and returns a promise with an object mapping permission types to statuses |
 | `getPermissionTypes` | *none* | - Returns an array of valid permission types  |
@@ -127,17 +120,11 @@ Promises resolve into one of these statuses
 ###iOS Notes
 Permission type `bluetooth` represents the status of the `CBPeripheralManager`. Don't use this if only need `CBCentralManager`
 
-Permission type `location` accepts a second parameter for `requestPermission` and `getPermissionStatus`;  the second parameter is a string, either `always` or `whenInUse`(default).
-
-Permission type `notification` accepts a second parameter for `requestPermission`. The second parameter is an array with the desired alert types. Any combination of `alert`, `badge` and `sound` (default requests all three)
-
+`requestPermission` also accepts a second parameter for types `location` and `notification`.
+- `location`: the second parameter is a string, either `always` or `whenInUse`(default).
+- `notification`: the second parameter is an array with the desired alert types. Any combination of `alert`, `badge` and `sound` (default requests all three)
 ```js
 ///example
-    Permissions.getPermissionStatus('location', 'always')
-      .then(response => {
-        this.setState({ locationPermission: response })
-      })
-
     Permissions.requestPermission('location', 'always')
       .then(response => {
         this.setState({ locationPermission: response })
@@ -149,14 +136,6 @@ Permission type `notification` accepts a second parameter for `requestPermission
       })
 ```
 
-You cannot request microphone permissions on the simulator.
-
-With Xcode 8, you now need to add usage descriptions for each permission you will request. Open Xcode > Info.plist > Add a key (starting with "Privacy - ...") with your kit specific permission.
-
-Example:
-If you need Contacts permission you have to add the key "Privacy - Contacts Usage Description".
-<img width="338" alt="3cde3b44-7ffd-11e6-918b-63888e33f983" src="https://cloud.githubusercontent.com/assets/1440796/18713019/271be540-8011-11e6-87fb-c3828c172dfc.png">
-
 ###Android Notes
 
 Requires RN >= 0.29.0
@@ -165,15 +144,13 @@ All required permissions also need to be included in the Manifest before they ca
 
 Permissions are automatically accepted for targetSdkVersion < 23 but you can still use `getPermissionStatus` to check if the user has disabled them from Settings.
 
-Here's a map of types to Android system permissions names:
-`location` -> `android.permission.ACCESS_FINE_LOCATION`
-`camera` -> `android.permission.CAMERA`
-`microphone` -> `android.permission.RECORD_AUDIO`
-`photo` -> `android.permission.READ_EXTERNAL_STORAGE`
-`storage` -> `android.permission.READ_EXTERNAL_STORAGE`
-`contacts` -> `android.permission.READ_CONTACTS`
-`event` -> `android.permission.READ_CALENDAR`
-
+Here's a map of types to Android system permissions names:  
+`location` -> `android.permission.ACCESS_FINE_LOCATION`  
+`camera` -> `android.permission.CAMERA`  
+`microphone` -> `android.permission.RECORD_AUDIO`  
+`photo` -> `android.permission.READ_EXTERNAL_STORAGE`  
+`contacts` -> `android.permission.READ_CONTACTS`  
+`event` -> `android.permission.READ_CALENDAR`  
 
 You can request write access to any of these types by also including the appropriate write permission in the Manifest. Read more here: https://developer.android.com/guide/topics/security/permissions.html#normal-dangerous
 
@@ -184,7 +161,7 @@ npm install --save react-native-permissions
 rnpm link
 ````
 
-###Or manualy linking
+###Or manualy linking   
 
 ####iOS
 * Run open node_modules/react-native-permissions
@@ -236,10 +213,4 @@ public class MainApplication extends Application implements ReactApplication {
 ##Troubleshooting
 
 #### Q: Android - `undefined is not a object (evaluating 'RNPermissions.requestPermissions')`
-A: `rnpm` may not have linked correctly. Follow the manual linking steps and make sure the library is linked
-
-#### Q: iOS - app crashes as soon as I request permission
-A: starting with xcode 8, you need to add permission descriptions. see iOS notes for more details. Thanks to @jesperlndk for discovering this.
-
-#### Q: iOS - app crashes when I change permissions from settings
-A: This is normal. iOS restarts your app when your privacy settings change. Just google "ios crash permission change"
+A: `rnpm` may not have linked correctly. Follow the manual linking steps and make sure the library is linked 

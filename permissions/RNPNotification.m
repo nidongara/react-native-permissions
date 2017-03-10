@@ -19,21 +19,35 @@ static NSString* RNPDidAskForNotification = @"RNPDidAskForNotification";
 + (NSString *)getStatus
 {
     BOOL didAskForPermission = [[NSUserDefaults standardUserDefaults] boolForKey:RNPDidAskForNotification];
-    BOOL isRegistered = [[UIApplication sharedApplication] isRegisteredForRemoteNotifications];
-    BOOL isEnabled = [[[UIApplication sharedApplication] currentUserNotificationSettings] types] != UIUserNotificationTypeNone;
     
-    if (isRegistered || isEnabled) {
-        return isEnabled ? RNPStatusAuthorized : RNPStatusDenied;
+    if (didAskForPermission) {
+        if ([[UIApplication sharedApplication] respondsToSelector:@selector(isRegisteredForRemoteNotifications)]) {
+            // iOS8+
+            BOOL isRegistered = [[UIApplication sharedApplication] isRegisteredForRemoteNotifications];
+            BOOL isEnabled = [[[UIApplication sharedApplication] currentUserNotificationSettings] types] != UIUserNotificationTypeNone;
+            if (isRegistered || isEnabled) {
+                return isEnabled ? RNPStatusAuthorized : RNPStatusDenied;
+            }
+            else {
+                return RNPStatusDenied;
+            }
+        } else {
+            if ([[UIApplication sharedApplication] enabledRemoteNotificationTypes] == UIRemoteNotificationTypeNone) {
+                return RNPStatusDenied;
+            }
+            else {
+                return RNPStatusAuthorized;
+            }
+        }
     } else {
-        return didAskForPermission ? RNPStatusDenied : RNPStatusUndetermined;
+        return RNPStatusUndetermined;
     }
 }
 
 - (void)request:(UIUserNotificationType)types completionHandler:(void (^)(NSString*))completionHandler
 {
-    NSString *status = [self.class getStatus];
-    
-    if (status == RNPStatusUndetermined) {
+    BOOL didAskForPermission = [[NSUserDefaults standardUserDefaults] boolForKey:RNPDidAskForNotification];
+    if (!didAskForPermission) {
         self.completionHandler = completionHandler;
         
         [[NSNotificationCenter defaultCenter] addObserver:self
@@ -41,14 +55,19 @@ static NSString* RNPDidAskForNotification = @"RNPDidAskForNotification";
                                                      name:UIApplicationDidBecomeActiveNotification
                                                    object:nil];
         
-        UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
-        [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
-        [[UIApplication sharedApplication] registerForRemoteNotifications];
+        if ([[UIApplication sharedApplication] respondsToSelector:@selector(isRegisteredForRemoteNotifications)]) {
+            // iOS8+
+            UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
+            [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
+            [[UIApplication sharedApplication] registerForRemoteNotifications];
+        } else {
+            [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationType)types];
+        }
         
         [[NSUserDefaults standardUserDefaults] setBool:YES forKey:RNPDidAskForNotification];
         [[NSUserDefaults standardUserDefaults] synchronize];
     } else {
-        completionHandler(status);
+        completionHandler([self.class getStatus]);
     }
 }
 

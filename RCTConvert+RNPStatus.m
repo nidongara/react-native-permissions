@@ -20,8 +20,7 @@ RCT_ENUM_CONVERTER(RNPType, (@{ @"location" : @(RNPTypeLocation),
                                 @"reminder" : @(RNPTypeReminder),
                                 @"bluetooth" : @(RNPTypeBluetooth),
                                 @"notification" : @(RNPTypeNotification),
-                                @"backgroundRefresh": @(RNPTypeBackgroundRefresh),
-                                @"speechRecognition": @(RNPTypeSpeechRecognition)
+                                @"backgroundRefresh": @(RNPTypeBackgroundRefresh)
                                 }),
                                 RNPTypeUnknown, integerValue)
 
