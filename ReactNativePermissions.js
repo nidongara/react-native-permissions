@@ -61,7 +61,7 @@ class ReactNativePermissions {
 
 	getPermissionStatus(permission, type) {
   	if (this.getPermissionTypes().indexOf(permission) >= 0) {
-			return RNPermissions.getPermissionStatus(permission, type)
+			return RNPermissions.getPermissionStatus(permission)
 		} else {
 			return Promise.reject(`ReactNativePermissions: ${permission} is not a valid permission type on ${Platform.OS}`)
 		}
