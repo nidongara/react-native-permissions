@@ -114,7 +114,7 @@ public class ReactNativePermissionsModule extends ReactContextBaseJavaModule {
   }
 
   private String permissionForString(String permission) {
-    switch (RNType.valueOf(permission.toUpperCase())) {
+    switch (RNType.valueOf(permission.toUpperCase(Locale.ENGLISH))) {
       case LOCATION:
         return Manifest.permission.ACCESS_FINE_LOCATION;
       case CAMERA:
